@@ -69,6 +69,11 @@ namespace FakeStoreApi.Controllers
         [HttpPut("{id:int}")]
         public async Task<ActionResult> UpdateProduct([FromForm]Product product,[FromRoute]int id)
         {
+            var prod = await _productRepo.GetProductById(id);
+            if (!string.IsNullOrEmpty(prod.ImageUrl) && !prod.ImageUrl.Contains(product.ImageFile.FileName))
+            {
+                product.ImageUrl = await FileUploader.FileUpload(product.ImageFile, _webHostEnvironment);
+            }
             await _productRepo.UpdateProduct(id, product);
             return Ok();
         }

@@ -45,7 +45,7 @@ namespace FakeStoreApi.Repository
                 Title = product.Title,
                 Price = product.Price,
                 Description = product.Description,
-                Categories = GetCategoryById(product.CategoryId.Value).Name,
+                Categories = product.CategoryId.HasValue ? GetCategoryById(product.CategoryId.Value).Name: string.Empty,
                 ImageUrl = product.ImageUrl,
             };
             return model;
@@ -84,8 +84,12 @@ namespace FakeStoreApi.Repository
 
         public Category GetCategoryById(int id)
         {
-            var category =  _dbContext.Categories.FirstOrDefault(x => x.Id == id);
-            return category;
+            if(id > 0)
+            {
+                var category = _dbContext.Categories.FirstOrDefault(x => x.Id == id);
+                return category;
+            }
+            return null;
         }
     }
 }
