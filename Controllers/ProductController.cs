@@ -55,7 +55,7 @@ namespace FakeStoreApi.Controllers
             return NotFound();
         }
 
-        [HttpGet("[action]/{id:int}")]
+        [HttpGet("{id:int}")]
         public async Task<ActionResult> GetProductsById([FromRoute]int id)
         {
             if(id > 0)

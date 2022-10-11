@@ -39,6 +39,8 @@ namespace FakeStoreApi.Repository
         public async Task<ProductModel> GetProductById(int id)
         {
             var product = await _dbContext.Products.Where(x => x.Id == id).FirstOrDefaultAsync();
+            if (product == null)
+                return null;
             var model = new ProductModel()
             {
                 Id = product.Id,
