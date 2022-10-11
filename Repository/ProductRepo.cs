@@ -1,4 +1,6 @@
-﻿using FakeStoreApi.DataContext;
+﻿using FakeStoreApi.ApiModels;
+using FakeStoreApi.DataContext;
+using FakeStoreApi.Helper;
 using FakeStoreApi.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -34,12 +36,19 @@ namespace FakeStoreApi.Repository
             }
         }
 
-        public async Task<Product> GetProductById(int id)
+        public async Task<ProductModel> GetProductById(int id)
         {
-            var product = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
-            var productCategory = await GetCategoryById(product.Id);
-            product.Categories = productCategory.Name;
-            return product;
+            var product = await _dbContext.Products.Where(x => x.Id == id).FirstOrDefaultAsync();
+            var model = new ProductModel()
+            {
+                Id = product.Id,
+                Title = product.Title,
+                Price = product.Price,
+                Description = product.Description,
+                Categories = GetCategoryById(product.CategoryId.Value).Name,
+                ImageUrl = product.ImageUrl,
+            };
+            return model;
         }
 
         public async Task<List<Product>> GetAllProducts()
@@ -49,10 +58,10 @@ namespace FakeStoreApi.Repository
             return products;
         }
 
-        public async Task<Product> UpdateProduct(Product product)
+        public async Task<Product> UpdateProduct(int id, Product product)
         {
-            var result = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == product.Id);
-            if (result != null)
+            var result = await _dbContext.Products.FirstOrDefaultAsync(x => x.Id == id);
+            if (product != null)
             {
                 result.Title = product.Title;
                 result.Description = product.Description;
@@ -73,9 +82,9 @@ namespace FakeStoreApi.Repository
             return category;
         }
 
-        public async Task<Category> GetCategoryById(int id)
+        public Category GetCategoryById(int id)
         {
-            var category = await _dbContext.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            var category =  _dbContext.Categories.FirstOrDefault(x => x.Id == id);
             return category;
         }
     }

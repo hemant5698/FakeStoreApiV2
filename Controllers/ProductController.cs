@@ -56,7 +56,7 @@ namespace FakeStoreApi.Controllers
         }
 
         [HttpGet("[action]/{id:int}")]
-        public async Task<ActionResult> GetProductById(int id)
+        public async Task<ActionResult> GetProductsById([FromRoute]int id)
         {
             if(id > 0)
             {
@@ -66,22 +66,22 @@ namespace FakeStoreApi.Controllers
             return NotFound();
         }
 
-        [HttpPut]
-        public async Task<ActionResult> UpdateProduct(Product product)
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> UpdateProduct([FromForm]Product product,[FromRoute]int id)
         {
-            if (product != null)
+            await _productRepo.UpdateProduct(id, product);
+            return Ok();
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> DeleteProduct([FromRoute] int id)
+        {
+            if(id > 0)
             {
-                await _productRepo.UpdateProduct(product);
+                await _productRepo.DeleteProduct(id);
                 return Ok();
             }
             return NotFound();
-        }
-
-        [HttpDelete]
-        public async Task<ActionResult> DeleteProduct(int id)
-        {
-            await _productRepo.DeleteProduct(id);
-            return Ok();
         }
     }
 }
